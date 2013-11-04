@@ -1,52 +1,53 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <string.h>
 #include <cmath>
 #include <stdexcept>
 using namespace std;
 int main(int argc, char **argv) {
-        int type;
-        int n;
-        double **matrix;
-        double **b;
-        cin >>type >> n;
-        matrix=new double*[n];
-        double eps=1e-6;
-        cout.precision(-log10(eps));
-        cout << "matrix input:\n";
-        for(int i=0;i<n;i++)
-        {
-                matrix[i]= new double[n];
-                for(int j=0;j<n;j++) {
-                        cin >> matrix[i][j];
-                        cout << matrix[i][j] << ' ';
-                }
-                cout << endl;
+    try {
+        int k; // 0 – вычисляется сам полином, 1 – его первая производная, 2 – вторая производная
+        int n; //порядок полинома
+        string s; //e -- even, u -- uneven
+        double a,b; //– границы отрезка (при равномерной сетке);
+        cin >> k >> n;
+        getline(cin,s);
+        getline(cin,s);
+        double *x = new double[n];
+        double *y = new double[n];
+        if (s=="e") {
+            cin >> a >> b;
         }
-        double epsf=0;
-        double *epsv = new double[n];
-        try {
-            double **result;
-            double **P;
-            double **s;
-            if(type==1) {
-               P=findP(n,matrix,&s);
-               findLa(n,P,eps,matrix,s);
-               
-            }
+        else {
             for (int i=0; i<n; i++) {
-                delete[] matrix[i];
-                delete[] s[i];
-                delete[] P[i];
+                cin >> x[i];
             }
-            delete[] matrix;
-            delete[] P;
-            delete[] s;
         }
-        catch (invalid_argument &e) {
-            cerr << e.what() << endl;
+        for (int i=0; i<n; i++) {
+            cin >> y[i];
         }
-                
-        return 0;
+        int m; //количество интервалов в результирующей сетке (т.е. количество узлов – m + 1, что сделано для унификации с узлами исходной сетки);
+        cin >> m;
+        double *xres = new double[m];
+        for (int i=0; i<m; i++) {
+            cin >> xres[i];
+        }
+        string t; //'y' -- expression known, 'n' -- otherwise
+        getline(cin,t);
+        getline(cin,t);
+        string sexpr;
+        if (t=="y") {
+            getline(cin,sexpr);
+            getline(cin,sexpr);
+        }
+        //cerr << "n " << n << " t " << t << " a " << a << " b " << b << " s " << s << endl;
+        delete[] x;
+        delete[] y;
+        delete[] xres;
+    }
+    catch (invalid_argument &e) {
+        cerr << e.what() << endl;
+    }
+            
+    return 0;
 }
