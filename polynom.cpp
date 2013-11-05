@@ -4,25 +4,30 @@
 #include <stdexcept>
 #include <vector>
 using namespace std;
-void solveUneven(double *x, double *y, int n, int, double*);
+void solve(double *y, int n, int, double*);
 double eval(double *result, int n, double xres);
+double x(int i);
+double *xx;
+string s; //e -- even, u -- uneven
+double a,b; //– границы отрезка (при равномерной сетке);
+double h;
 int main(int argc, char **argv) {
     try {
         int k; // 0 – вычисляется сам полином, 1 – его первая производная, 2 – вторая производная
         int n; //порядок полинома
-        string s; //e -- even, u -- uneven
-        double a,b; //– границы отрезка (при равномерной сетке);
+        
         cin >> k >> n;
         getline(cin,s);
         getline(cin,s);
-        double *x = new double[n];
+        xx = new double[n];
         double *y = new double[n];
         if (s=="e") {
             cin >> a >> b;
+            h=abs(a-b)/(n-1);
         }
         else {
             for (int i=0; i<n; i++) {
-                cin >> x[i];
+                cin >> xx[i];
             }
         }
         for (int i=0; i<n; i++) {
@@ -43,14 +48,12 @@ int main(int argc, char **argv) {
             getline(cin,sexpr);
         }
         double *result = new double[n];
-        if (s=="u") {
-            solveUneven(x,y,n,k,result);
-        }
+        solve(y,n,k,result);
         for (int i=0; i<m; i++) {
-            cout << "x" << i << " P'(" << k << ")(x" << i << ") = " << eval(result,n,xres[i]) << endl;
+            cout << "x" << i << " P'(" << k << ")(" << x(i) << ") = " << eval(result,n,xres[i]) << endl;
         }
         delete[] result;
-        delete[] x;
+        delete[] xx;
         delete[] y;
         delete[] xres;
     }
@@ -61,7 +64,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-double findMultValue(double *x, int n, vector<int> &indexes, int k) {
+double findMultValue(int n, vector<int> &indexes, int k) {
     if (k==0) {
         return 1;
     }
@@ -76,7 +79,7 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
         double sum = 0;
         for (int i=0; i<n; i++) {
             if (aUsing[i]) {
-                sum -= x[i];
+                sum -= x(i);
             }
         }
         delete[] aUsing;
@@ -90,7 +93,7 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
         for (int i=0; i<inum; i++) {
             while (!aUsing[iusing]) ++iusing;
             indexes.push_back(iusing);
-            sum -= x[iusing]*findMultValue(x,n,indexes,k-1);
+            sum -= x(iusing)*findMultValue(n,indexes,k-1);
             ++iusing;
             ++count;
         }
@@ -99,7 +102,7 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
     }
 }
 
-void solveUneven(double *x, double *y, int n, int iDer, double *l) {
+void solve(double *y, int n, int iDer, double *l) {
     for (int k=0; k<n; k++) {
         l[k] = 0;
     }
@@ -107,7 +110,7 @@ void solveUneven(double *x, double *y, int n, int iDer, double *l) {
         double denom = 1;
         for (int j=0; j<n; j++) {
             if (i!=j) {
-                denom *= x[i]-x[j];
+                denom *= x(i)-x(j);
             }
         }
         double mult = y[i]/denom;
@@ -115,7 +118,7 @@ void solveUneven(double *x, double *y, int n, int iDer, double *l) {
         indexes.push_back(i);
         if (iDer==0) {
             for (int k=0; k<n; k++) {
-                l[k] += mult*findMultValue(x,n,indexes,k);
+                l[k] += mult*findMultValue(n,indexes,k);
             }
         }
         else if (iDer==1) {
@@ -124,7 +127,7 @@ void solveUneven(double *x, double *y, int n, int iDer, double *l) {
                 indexes.push_back(j);
                 for (int k=0; k<n; k++) {
                     if (k!=j) {
-                        l[il+iDer] += mult*findMultValue(x,n,indexes,il);
+                        l[il+iDer] += mult*findMultValue(n,indexes,il);
                         ++il;
                     }
                 }
@@ -140,7 +143,7 @@ void solveUneven(double *x, double *y, int n, int iDer, double *l) {
                     indexes.push_back(j);
                     for (int k=0; k<n; k++) {
                         if (k!=j && k!=i) {
-                            l[il+iDer] += mult*findMultValue(x,n,indexes,il);
+                            l[il+iDer] += mult*findMultValue(n,indexes,il);
                             ++il;
                         }
                     }
@@ -162,4 +165,10 @@ double eval(double *result, int n, double xres) {
         sum += result[i]*pow(xres,n-1-i);
     }
     return sum;
+}
+double x(int i) {
+    if(s=="e")
+        return a+h*i;
+    else
+        return xx[i];
 }
