@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
-//#include <sstream>
-//#include <cmath>
+#include <cmath>
 #include <stdexcept>
 #include <vector>
 using namespace std;
-void solveUneven(double *x, double *y, int n);
+void solveUneven(double *x, double *y, int n, double*);
+double eval(double *result, int n, double xres);
 int main(int argc, char **argv) {
     try {
         int k; // 0 – вычисляется сам полином, 1 – его первая производная, 2 – вторая производная
@@ -42,9 +42,14 @@ int main(int argc, char **argv) {
             getline(cin,sexpr);
             getline(cin,sexpr);
         }
+        double *result = new double[n];
         if (s=="u") {
-            solveUneven(x,y,n);
+            solveUneven(x,y,n,result);
         }
+        for (int i=0; i<m; i++) {
+            cout << "x" << i << " P'(" << k << ")(x" << i << ") = " << eval(result,n,xres[i]) << endl;
+        }
+        delete[] result;
         delete[] x;
         delete[] y;
         delete[] xres;
@@ -69,14 +74,11 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
     }
     if (k==1) {
         double sum = 0;
-        cerr << "sum : ";
         for (int i=0; i<n; i++) {
             if (aUsing[i]) {
-                cerr << x[i] << ' ';
                 sum -= x[i];
             }
         }
-        cerr << endl;
         delete[] aUsing;
         return sum;
     }
@@ -84,7 +86,8 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
         int iusing = 0;
         double sum = 0;
         int count = 0;
-        for (int i=0; i<n-indexes.size(); i++) {
+        int inum = n-indexes.size();
+        for (int i=0; i<inum; i++) {
             while (!aUsing[iusing]) ++iusing;
             indexes.push_back(iusing);
             sum -= x[iusing]*findMultValue(x,n,indexes,k-1);
@@ -96,8 +99,7 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
     }
 }
 
-void solveUneven(double *x, double *y, int n) {
-    double *l = new double[n];
+void solveUneven(double *x, double *y, int n, double *l) {
     for (int k=0; k<n; k++) {
         l[k] = 0;
     }
@@ -111,15 +113,20 @@ void solveUneven(double *x, double *y, int n) {
         double mult = y[i]/denom;
         vector<int> indexes; //исключаемые индексы
         indexes.push_back(i);
-        cerr << i << "mult : " << mult << " denom: " << denom << endl;
         for (int k=0; k<n; k++) {
             l[k] += mult*findMultValue(x,n,indexes,k);
-            cerr << "l " << k << " " << l[k] << endl;
         }
     }
     for (int i=0; i<n; i++) {
         cout << l[i] <<' ';
     }
     cout << endl;
-    delete[] l;
+}
+
+double eval(double *result, int n, double xres) {
+    double sum = 0;
+    for (int i=0; i<n; i++) {
+        sum += result[i]*pow(xres,n-1-i);
+    }
+    return sum;
 }
