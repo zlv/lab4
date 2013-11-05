@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <vector>
 using namespace std;
-void solveUneven(double *x, double *y, int n, double*);
+void solveUneven(double *x, double *y, int n, int, double*);
 double eval(double *result, int n, double xres);
 int main(int argc, char **argv) {
     try {
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
         }
         double *result = new double[n];
         if (s=="u") {
-            solveUneven(x,y,n,result);
+            solveUneven(x,y,n,k,result);
         }
         for (int i=0; i<m; i++) {
             cout << "x" << i << " P'(" << k << ")(x" << i << ") = " << eval(result,n,xres[i]) << endl;
@@ -99,7 +99,7 @@ double findMultValue(double *x, int n, vector<int> &indexes, int k) {
     }
 }
 
-void solveUneven(double *x, double *y, int n, double *l) {
+void solveUneven(double *x, double *y, int n, int iDer, double *l) {
     for (int k=0; k<n; k++) {
         l[k] = 0;
     }
@@ -113,8 +113,41 @@ void solveUneven(double *x, double *y, int n, double *l) {
         double mult = y[i]/denom;
         vector<int> indexes; //исключаемые индексы
         indexes.push_back(i);
-        for (int k=0; k<n; k++) {
-            l[k] += mult*findMultValue(x,n,indexes,k);
+        if (iDer==0) {
+            for (int k=0; k<n; k++) {
+                l[k] += mult*findMultValue(x,n,indexes,k);
+            }
+        }
+        else if (iDer==1) {
+            int il = 0;
+            for (int j=0; j<n; j++) {
+                indexes.push_back(j);
+                for (int k=0; k<n; k++) {
+                    if (k!=j) {
+                        l[il+iDer] += mult*findMultValue(x,n,indexes,il);
+                        ++il;
+                    }
+                }
+                indexes.pop_back();
+            }
+        }
+        else if (iDer==2) {
+            int il = 0;
+            for (int i=0; i<n; i++) {
+                indexes.push_back(i);
+                for (int j=0; j<n; j++) {
+                    if (i==j) continue;
+                    indexes.push_back(j);
+                    for (int k=0; k<n; k++) {
+                        if (k!=j && k!=i) {
+                            l[il+iDer] += mult*findMultValue(x,n,indexes,il);
+                            ++il;
+                        }
+                    }
+                    indexes.pop_back();
+                }
+                indexes.pop_back();
+            }
         }
     }
     for (int i=0; i<n; i++) {
