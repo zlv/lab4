@@ -119,8 +119,9 @@ void solveUneven(double *x, double *y, int n, int iDer, double *l) {
             }
         }
         else if (iDer==1) {
-            int il = 0;
             for (int j=0; j<n; j++) {
+                if (j==i) continue;
+                int il = 0;
                 indexes.push_back(j);
                 for (int k=0; k<n; k++) {
                     if (k!=j) {
@@ -132,15 +133,17 @@ void solveUneven(double *x, double *y, int n, int iDer, double *l) {
             }
         }
         else if (iDer==2) {
-            int il = 0;
-            for (int i=0; i<n; i++) {
-                indexes.push_back(i);
+            for (int m=0; m<n; m++) {
+                if (m==i) continue;
+                indexes.push_back(m);
                 for (int j=0; j<n; j++) {
-                    if (i==j) continue;
+                    if (j==i || j==m) continue;
+                    int il = 0;
                     indexes.push_back(j);
                     for (int k=0; k<n; k++) {
-                        if (k!=j && k!=i) {
+                        if (k!=j && k!=m) {
                             l[il+iDer] += mult*findMultValue(x,n,indexes,il);
+                            cerr << "l " << k << " is " << l[il+iDer] << " " << i << " " << j << " il+iDer " << il+iDer << endl;
                             ++il;
                         }
                     }
