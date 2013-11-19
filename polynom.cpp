@@ -7,6 +7,7 @@ using namespace std;
 void solve(double *y, int n, int, double*);
 double eval(double *result, int n, double xres);
 double x(int i);
+int fact(int in);
 double *xx;
 string s; //e -- even, u -- uneven
 double a,b; //– границы отрезка (при равномерной сетке);
@@ -50,7 +51,12 @@ int main(int argc, char **argv) {
         double *result = new double[n];
         solve(y,n,k,result);
         for (int i=0; i<m; i++) {
-            cout << "x" << i << " P'(" << k << ")(" << x(i) << ") = " << eval(result,n,xres[i]) << endl;
+        
+            double resT=eval(result,n,xres[i]);
+            if(s=="e")
+                resT=eval(result,n,(xres[i]-a)/h);
+            
+            cout << "x" << i << " P'(" << k << ")(" << xres[i] << ") = " << resT << endl;
         }
         delete[] result;
         delete[] xx;
@@ -108,10 +114,19 @@ void solve(double *y, int n, int iDer, double *l) {
     }
     for (int i=0; i<n; i++) {
         double denom = 1;
-        for (int j=0; j<n; j++) {
-            if (i!=j) {
-                denom *= x(i)-x(j);
-            }
+        
+        if(s!="e")
+        {
+                for (int j=0; j<n; j++) {
+                    if (i!=j) {
+                        denom *= x(i)-x(j);
+                    }
+                }
+        }
+        else
+        {
+                denom =fact(i)*fact(n-i)/pow(-1,n-i+1);
+                cout<<denom<<'\n';
         }
         double mult = y[i]/denom;
         vector<int> indexes; //исключаемые индексы
@@ -168,7 +183,14 @@ double eval(double *result, int n, double xres) {
 }
 double x(int i) {
     if(s=="e")
-        return a+h*i;
+        return i;
     else
         return xx[i];
+}
+int fact(int in)
+{
+  int fact=1;
+  for (int c = 1; c <= in; c++)
+    fact = fact * c;
+  return fact;
 }
