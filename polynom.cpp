@@ -54,7 +54,9 @@ int main(int argc, char **argv) {
         
             double resT=eval(result,n,xres[i]);
             if(s=="e")
+            {
                 resT=eval(result,n,(xres[i]-a)/h);
+            }
             
             cout << "x" << i << " P'(" << k << ")(" << xres[i] << ") = " << resT << endl;
         }
@@ -125,8 +127,7 @@ void solve(double *y, int n, int iDer, double *l) {
         }
         else
         {
-                denom =fact(i)*fact(n-i)/pow(-1,n-i+1);
-                cout<<denom<<'\n';
+                denom =fact(i)*fact(n-i-1)/pow(-1,n-i-1);
         }
         double mult = y[i]/denom;
         vector<int> indexes; //исключаемые индексы
@@ -160,7 +161,7 @@ void solve(double *y, int n, int iDer, double *l) {
                     indexes.push_back(j);
                     for (int k=0; k<n; k++) {
                         if (k!=j && k!=m) {
-                            l[il+iDer] += mult*findMultValue(x,n,indexes,il);
+                            l[il+iDer] += mult*findMultValue(n,indexes,il);
                             ++il;
                         }
                     }
