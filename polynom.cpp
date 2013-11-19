@@ -46,10 +46,10 @@ int main(int argc, char **argv) {
         string sexpr;
         if (t=="y") {
             getline(cin,sexpr);
-            getline(cin,sexpr);
         }
         double *result = new double[n];
         solve(y,n,k,result);
+        double *resnum = new double[m];
         for (int i=0; i<m; i++) {
         
             double resT=eval(result,n,xres[i]);
@@ -57,10 +57,25 @@ int main(int argc, char **argv) {
             {
                 resT=eval(result,n,(xres[i]-a)/h);
             }
+            resnum[i] = resT;
             
             cout << "x" << i << " P'(" << k << ")(" << xres[i] << ") = " << resT << endl;
         }
+        if (t=="y") {
+                double *resfuncnum = new double[m];
+                double sum = 0;
+                for (int i=0; i<m; i++) {
+                        if (sexpr=="sin") {
+                                resfuncnum[i] = sin(xres[i]);
+                        }
+                        sum += sqrt(pow(resnum[i]-resfuncnum[i],2));
+                }
+                sum /= m;
+                cout << "Deviation: " << sum << endl;
+                delete[] resfuncnum;
+        }
         delete[] result;
+        delete[] resnum;
         delete[] xx;
         delete[] y;
         delete[] xres;
