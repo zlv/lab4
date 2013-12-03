@@ -1,5 +1,7 @@
+#include "PolStr.h"
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <cmath>
 #include <stdexcept>
 #include <vector>
@@ -18,6 +20,7 @@ int main(int argc, char **argv) {
         int n; //порядок полинома
         
         cin >> k >> n;
+        n++;
         getline(cin,s);
         getline(cin,s);
         xx = new double[n];
@@ -44,8 +47,12 @@ int main(int argc, char **argv) {
         getline(cin,t);
         getline(cin,t);
         string sexpr;
+        char* sexpr_c = new char[1024+1];
         if (t=="y") {
             getline(cin,sexpr);
+            strcpy(sexpr_c,sexpr.c_str());
+            sexpr_c=CreatePolStr(sexpr_c,0);
+            
         }
         double *result = new double[n];
         solve(y,n,k,result);
@@ -65,9 +72,7 @@ int main(int argc, char **argv) {
                 double *resfuncnum = new double[m];
                 double sum = 0;
                 for (int i=0; i<m; i++) {
-                        if (sexpr=="sin") {
-                                resfuncnum[i] = sin(xres[i]);
-                        }
+                        resfuncnum[i]=EvalPolStr(sexpr_c,xres[i],k);
                         sum += sqrt(pow(resnum[i]-resfuncnum[i],2));
                 }
                 sum /= m;
