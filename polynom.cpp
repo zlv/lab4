@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
             
             cout << "x" << i << " P'(" << k << ")(" << xres[i] << ") = " << resT << endl;
         }
-        if (t=="y") {
+        if (t=="y"&&k==0) {
                 double *resfuncnum = new double[m];
                 double sum = 0;
                 for (int i=0; i<m; i++) {
